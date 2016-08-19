@@ -12,11 +12,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import blue.com.Serial.ISerial;
 import blue.util.ArrayUtils;
 import blue.util.Convert;
 import blue.util.Utils;
 
-public final class Bencode {
+public final class Bencode implements ISerial {
 
 	// =====================================================
 	//					BcType
@@ -66,10 +67,15 @@ public final class Bencode {
 		 */
 		public abstract byte[] encode();
 		
+		public Bencode toBencode(){
+			return new Bencode(encode());
+		}
+		
 		@Override
 		public String toString() {
 			return Convert.toString(encode(), charset());
 		}
+		// =============================
 	}
 
 	// =====================================================
@@ -297,13 +303,36 @@ public final class Bencode {
 
 	// =====================================================
 
+	private byte[] data;
+	
+	// ------------------------------------------------------
+	
 	private Bencode() {
+		this(new byte[0]);
+	}
+	
+	public Bencode(byte[] data) {
+		this.data = data;
+	}
+	
+	public Bencode(Object obj) {
+		this.data = _do_encode(obj).encode();
 	}
 
 	// =====================================================
 	
-	public static BcObject decode(byte[] data){
-		return new Bencode()._do_decode(data);
+	public BcObject toObject() {
+		return _do_decode(data);
+	}
+
+	@Override
+	public byte[] toBytes() {
+		return data;
+	}
+
+	@Override
+	public void fromBytes(byte[] data) {
+		this.data = data;
 	}
 	
 	/**
@@ -345,12 +374,8 @@ public final class Bencode {
 
 	// =====================================================
 	
-	public static BcObject encode(Object obj){
-		return new Bencode()._do_encode(obj);
-	}
-
 	@SuppressWarnings("rawtypes")
-	public BcObject _do_encode(Object obj) {
+	private BcObject _do_encode(Object obj) {
 
 		// array
 		if (obj.getClass().isArray()) {
@@ -533,4 +558,10 @@ public final class Bencode {
 		
 		return ret.toByteArray();
 	}
+	
+	@Override
+	public String toString() {
+		return toObject().toString();
+	}
+
 }

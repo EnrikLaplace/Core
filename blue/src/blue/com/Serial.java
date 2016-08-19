@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import blue.lang.Assert;
+import blue.lang.Bencode;
 import blue.util.Convert;
 import blue.util.NetUtils;
 import blue.util.Primitives;
@@ -34,8 +35,8 @@ public final class Serial {
 	// =====================================
 	
 	public interface ISerial {
-		byte[] encode();
-		void decode(byte[] data);
+		byte[] toBytes();
+		void fromBytes(byte[] data);
 	}
 	
 	// =====================================
@@ -228,7 +229,7 @@ public final class Serial {
 			if(obj instanceof ISerial){
 				byte[] pars = new byte[buff.getInt()];
 				buff.get(pars);
-				((ISerial)obj).decode(pars);
+				((ISerial)obj).fromBytes(pars);
 				return obj;
 			}
 			
@@ -462,7 +463,7 @@ public final class Serial {
 			
 			// custom parser
 			if(ISerial.class.isAssignableFrom(type)){
-				byte[] enc = ((ISerial)bean).encode();
+				byte[] enc = ((ISerial)bean).toBytes();
 				out.write(Convert.toBytes(enc.length));
 				out.write(enc);
 				return;
@@ -646,21 +647,13 @@ public final class Serial {
 			throw new ParseException(e.getMessage(), 0);
 		}
 	}
-	
-	public static class aa {
-		private Object fff = new BigDecimal("1999999999999999999977777777777777777777777999999999999999999999999999923");
-		
-		@Override
-		public String toString() {
-			return "dd:"+fff;
-		}
-	}
-	
+//
+//	
 //	
 //	public static void main(String[] args) throws ParseException {
-//		byte[] enc = Serial.encode(new aa());
+//		byte[] enc = Serial.encode(new Bencode("ciao"));
 //		System.out.println(enc.length);
 //		System.out.println(Serial.decode(enc));
 //	}
-	
+//	
 }
