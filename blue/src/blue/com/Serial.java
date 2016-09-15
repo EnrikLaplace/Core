@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.ParseException;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import blue.lang.Assert;
-import blue.lang.Bencode;
 import blue.util.Convert;
 import blue.util.NetUtils;
 import blue.util.Primitives;
@@ -261,6 +259,7 @@ public final class Serial {
 			return obj;
 		} catch (Exception e) {
 //			log.error(e);
+			e.printStackTrace();
 			throw new ParseException("Unable to parse bean", buff.position());
 		}
 	}

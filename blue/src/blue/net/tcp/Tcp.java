@@ -49,7 +49,10 @@ public class Tcp extends Com {
 	// ================================
 
 	public void close() throws IOException {
-		socket.close();
+		if(socket != null){
+			socket.close();
+			socket = null;
+		}
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class Tcp extends Com {
 			strout.write(data, 0, data.length);
 			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return false;
 		}
 	}
@@ -87,7 +90,7 @@ public class Tcp extends Com {
 			}
 			return true;
 		}catch(Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return false;
 		}
 	}
@@ -105,7 +108,7 @@ public class Tcp extends Com {
 				return this;
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 	}
@@ -119,7 +122,7 @@ public class Tcp extends Com {
 			}
 			return instream;
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 	}
@@ -133,7 +136,7 @@ public class Tcp extends Com {
 			}
 			return outstream;
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 	}

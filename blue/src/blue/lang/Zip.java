@@ -94,6 +94,7 @@ public class Zip implements Iterable<Zip.ZipElement> {
 				dest.mkdirs();
 			}
 			File mf = new File(dest, getName());
+			ZipFile zz = Zip.this.open(false);
 			if(isDirectory()){
 				mf.mkdirs();
 				for(ZipElement cc:getContent()){
@@ -102,11 +103,23 @@ public class Zip implements Iterable<Zip.ZipElement> {
 					if(cc.isDirectory()){
 						mf2.mkdirs();
 					}else{
-						StreamUtils.save(cc.open(), mf2);
+						try {
+							StreamUtils.save(zz.getInputStream(cc.getEntry()), mf2);
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
 					}
 				}
 			}else{
-				StreamUtils.save(open(), mf);
+				try {
+					StreamUtils.save(zz.getInputStream(el), mf);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			try {
+				zz.close();
+			} catch (IOException e) {
 			}
 			return mf;
 		}
@@ -131,16 +144,8 @@ public class Zip implements Iterable<Zip.ZipElement> {
 			return ret.toArray(new ZipElement[ret.size()]);
 		}
 		
-		public InputStream open() {
-			if(isDirectory()){
-				return null;
-			}
-			try {
-				ZipFile zip = Zip.this.open(false);
-				return zip.getInputStream(el);
-			} catch (IOException e) {
-				return null;
-			}
+		ZipEntry getEntry() {
+			return el;
 		}
 	}
 
@@ -229,26 +234,29 @@ public class Zip implements Iterable<Zip.ZipElement> {
     	try {
 			ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmp,true)));
 			zos.setMethod(ZipOutputStream.DEFLATED);
-			ZipFile rzip = open(false);
-			List<String> duplPath = new ArrayList<String>();
-			for(ZipElement dd:addList){
-				duplPath.add(dd.path);
+			if(file.exists()){
+				ZipFile rzip = open(false);
+				List<String> duplPath = new ArrayList<String>();
+				for(ZipElement dd:addList){
+					duplPath.add(dd.path);
+				}
+				for(ZipElement el:elements.get()) {
+		    		if(!el.doDelete && !duplPath.contains(el.path)){
+//	    				System.out.println(el.path);
+	    				zos.putNextEntry(new ZipEntry(el.el));
+		    			if(!el.el.isDirectory()){
+		    				StreamUtils.copy(rzip.getInputStream(el.el), zos, true);
+		    			}
+		    			try{
+			    	    	zos.closeEntry();
+		    			}catch(IOException e){
+		    				System.out.println(el.path);
+		    				throw e;
+		    			}
+		    		}
+		    	}
+				rzip.close();
 			}
-			for(ZipElement el:elements.get()) {
-	    		if(!el.doDelete && !duplPath.contains(el.path)){
-//    				System.out.println(el.path);
-    				zos.putNextEntry(new ZipEntry(el.el));
-	    			if(!el.el.isDirectory()){
-	    				StreamUtils.copy(rzip.getInputStream(el.el), zos, true);
-	    			}
-	    			try{
-		    	    	zos.closeEntry();
-	    			}catch(IOException e){
-	    				System.out.println(el.path);
-	    				throw e;
-	    			}
-	    		}
-	    	}
 			for(ZipElement el:addList) {
 				zos.putNextEntry(new ZipEntry(el.el));
     			if(!el.el.isDirectory()){
@@ -257,7 +265,6 @@ public class Zip implements Iterable<Zip.ZipElement> {
     	    	zos.closeEntry();
 			}
 			addList.clear();
-			rzip.close();
 	    	zos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -394,14 +401,25 @@ public class Zip implements Iterable<Zip.ZipElement> {
     	if(!dest.isDirectory()){
     		dest.mkdirs();
     	}
+		ZipFile zip = this.open(false);
     	for(ZipElement ee:elements.get()){
     		File elFile = new File(dest, ee.getPath());
     		if(ee.isDirectory()){
     			elFile.mkdirs();
     		}else{
-    			StreamUtils.save(ee.open(), elFile);
+    			try {
+        			InputStream str = zip.getInputStream(ee.el);
+        			StreamUtils.save(str, elFile);
+					str.close();
+				} catch (IOException e) {
+				}
     		}
     	}
+		try {
+			zip.close();
+			System.gc();
+		} catch (IOException e) {
+		}
     }
     
     /**

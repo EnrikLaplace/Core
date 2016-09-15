@@ -72,6 +72,16 @@ public final class Utils {
 	 * @param max
 	 * @return
 	 */
+	public static long rndLong() {
+		return RND.nextLong();
+	}
+	
+	/**
+	 * random INT
+	 * 
+	 * @param max
+	 * @return
+	 */
 	public static int rndInt(int max) {
 		return RND.nextInt(max);
 	}
@@ -606,6 +616,18 @@ public final class Utils {
         }
 	}
 	
+	public static boolean equals(URL url1, URL url2){
+        String u1 = url1.toString();
+        String u2 = url2.toString();
+        while(u1.endsWith("/")){
+            u1 = u1.substring(0, u1.length()-1);
+        }
+        while(u2.endsWith("/")){
+            u2 = u2.substring(0, u2.length()-1);
+        }
+        return u1.equalsIgnoreCase(u2);
+	}
+	
 	public static URL toUrl(String url){
 	    try {
             return new URL(url);
@@ -614,18 +636,59 @@ public final class Utils {
         }
 	}
     
-    public static URL toUrl(URL parent, String path){
+    public static URL parse(URL parent, String path){
         try {
             return new URL(parent, path);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
-
     
-    public static URL setProtocol(URL url, String protocol){
+    public static URL toUrl(String protocol, String host, String path){
+        try {
+            return new URL(protocol, host, path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static URL toUrl(String protocol, String user, String password, String host, String path){
+        try {
+            if(user==null||password==null){
+                throw new RuntimeException("Invalid username/password data");
+            }
+            return new URL(protocol, user+":"+password+"@"+host, path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static URL toUrl(String protocol, String user, String password, String host, int port, String path){
+        try {
+            if(user==null||password==null){
+                throw new RuntimeException("Invalid username/password data");
+            }
+            return new URL(protocol, user+":"+password+"@"+host, port, path);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static URL toUrl(URL url, String protocol){
         try {
             return new URL(protocol, url.getHost(), url.getPort(), url.getFile());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static URL toUrl(URL url, String protocol, String user, String password){
+        try {
+            int port = url.getPort();
+            if(port < 1){
+                port = NetUtils.getDefaultPort(protocol);
+            }
+            return new URL(protocol+ "://" + ((user==null||password==null)?"":user+":"+password+"@")+url.getHost()+":"+port+"/"+url.getFile());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

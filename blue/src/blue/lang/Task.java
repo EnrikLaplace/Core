@@ -131,7 +131,7 @@ public abstract class Task  {
 	 * @param ex
 	 */
 	protected void manageException(Throwable ex){
-		ex.printStackTrace();
+//		ex.printStackTrace();
 	}
 	
 	// =================================

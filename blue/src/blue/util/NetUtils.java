@@ -3,6 +3,7 @@ package blue.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
@@ -13,7 +14,24 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
+import blue.lang.Cache;
+
 public class NetUtils {
+    private static final Cache<String, Integer> protocolDefaultPort = new Cache<String, Integer>() {
+        
+        @Override
+        protected Integer init(String protocol) {
+            if(protocol.equalsIgnoreCase("svn")){
+                return 80; // not supported
+            }
+            try {
+                return new URL(protocol+"://exe.it").getDefaultPort();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Invalid protocol: "+protocol);
+            }
+        }
+    };
+    
 	private NetUtils() {}
 	
 	/**
@@ -30,6 +48,10 @@ public class NetUtils {
 		} catch (IOException e) {
 			return -1;
 		}
+	}
+	
+	public static int getDefaultPort(String protocol){
+	    return protocolDefaultPort.get(protocol);
 	}
 
 	public static InetAddress getLocalHost() {
