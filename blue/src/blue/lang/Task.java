@@ -64,7 +64,7 @@ public abstract class Task  {
 				init();
 			}
 		};
-		
+
 		// config
 		this.isDaemon = isDaemon;
 		init();
@@ -131,7 +131,7 @@ public abstract class Task  {
 	 * @param ex
 	 */
 	protected void manageException(Throwable ex){
-//		ex.printStackTrace();
+		ex.printStackTrace();
 	}
 	
 	// =================================
@@ -144,7 +144,7 @@ public abstract class Task  {
 		}
 	}
 	
-	void _internal_on_end(){
+	protected void _internal_on_end(){
 		// brutally kill al childs!
 		// buahahaahahahahah!!
 		for(Task c:subThreads){

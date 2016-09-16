@@ -12,12 +12,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import blue.util.AsyncStreamCopy;
 import blue.util.Base64;
+import blue.util.ClassUtils;
 import blue.util.StreamUtils;
+import sun.net.www.MessageHeader;
 
 public class HttpRequest {
 	
@@ -324,9 +327,17 @@ public class HttpRequest {
 		// return stream
 		try {
 			stream = conn.getInputStream();
+			Map<String,List<String>> header = ((MessageHeader)ClassUtils.getField(conn, "responses")).getHeaders();
+			for(Entry<String, List<String>> hdr:header.entrySet()){
+				if(hdr.getKey() != null && hdr.getKey().equalsIgnoreCase("Set-Cookie")){
+					cookies.set(hdr.getValue());
+				}
+			}
+//			cookies.update();
 			return stream;
 		} catch (IOException e) {
 			// no input stream
+			e.printStackTrace();
 			stream = null;
 			return null;
 		}
@@ -376,5 +387,9 @@ public class HttpRequest {
 	
 	public static HttpRequest post(URL uri){
 		return new HttpRequest(uri).setMethod(HttpMethod.POST);
+	}
+
+	public Cookie getCookie(String key) {
+		return cookies.get(key);
 	}
 }

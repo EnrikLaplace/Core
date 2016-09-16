@@ -179,7 +179,28 @@ public final class Utils {
         }
         return extension.toLowerCase();
     }
-	
+    
+    public static String getFileNameInPath(String path) {
+        String fname = "";
+        int dotPos = path.lastIndexOf("/");
+        int dotPos2 = path.lastIndexOf("\\");
+        if(dotPos2 > dotPos){
+        	dotPos = dotPos2;
+        }
+        if (dotPos >= 0) {
+        	fname = path.substring(dotPos+1);
+        }
+        return fname;
+    }
+
+    
+    public static String getPath(String path) {
+    	String fname = getFileNameInPath(path);
+    	if(fname.length() == 0){
+    		return path;
+    	}
+    	return path.substring(0, path.length()-fname.length());
+    }
 
 	/**
 	 * Default charset (ASCII7)

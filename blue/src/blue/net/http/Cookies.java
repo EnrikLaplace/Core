@@ -6,6 +6,8 @@ import java.util.Vector;
 
 import com.sun.net.httpserver.Headers;
 
+import blue.util.Utils;
+
 public class Cookies extends HashMap<String, Cookie>{
 	private static final long serialVersionUID = -7890325406834361685L;
 	
@@ -63,5 +65,17 @@ public class Cookies extends HashMap<String, Cookie>{
 			ret += c.toString() + "; ";
 		}
 		return ret;
+	}
+
+	public void update(String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void set(List<String> value) {
+		for(String vv:value){
+			vv=vv.split(";")[0];
+			set(Utils.splitBefore(vv, "="), Utils.splitAfter(vv, "="));
+		}
 	}
 }

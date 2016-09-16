@@ -227,8 +227,12 @@ public class Convert {
 	 * @param s
 	 * @return
 	 */
-	public static byte[] toBytes(short s){
-		return ByteBuffer.allocate(2).putShort(s).array();
+	public static byte[] toBytes(short n){
+		byte[] ret = new byte[2];
+		ret[0] = (byte) ((n & 0x0000FF00) >> 8);
+		ret[1] = (byte) ((n & 0x000000FF) >> 0);
+		return ret;
+//		return ByteBuffer.allocate(2).putShort(s).array();
 	}
 	
 	/**
@@ -238,7 +242,13 @@ public class Convert {
 	 * @return
 	 */
 	public static byte[] toBytes(int n){
-		return ByteBuffer.allocate(4).putInt(n).array();
+		byte[] ret = new byte[4];
+		ret[0] = (byte) ((n & 0xFF000000) >> 24);
+		ret[1] = (byte) ((n & 0x00FF0000) >> 16);
+		ret[2] = (byte) ((n & 0x0000FF00) >> 8);
+		ret[3] = (byte) ((n & 0x000000FF) >> 0);
+		return ret;
+//		return ByteBuffer.allocate(4).putInt(n).array();
 	}
 	
 	/**
@@ -258,7 +268,17 @@ public class Convert {
 	 * @return
 	 */
 	public static byte[] toBytes(long n){
-		return ByteBuffer.allocate(8).putLong(n).array();
+		byte[] ret = new byte[8];
+		ret[0] = (byte) ((n & 0xFF000000) >> 56);
+		ret[1] = (byte) ((n & 0x00FF0000) >> 48);
+		ret[2] = (byte) ((n & 0x0000FF00) >> 40);
+		ret[3] = (byte) ((n & 0x000000FF) >> 32);
+		ret[4] = (byte) ((n & 0xFF000000) >> 24);
+		ret[5] = (byte) ((n & 0x00FF0000) >> 16);
+		ret[6] = (byte) ((n & 0x0000FF00) >> 8);
+		ret[7] = (byte) ((n & 0x000000FF) >> 0);
+		return ret;
+//		return ByteBuffer.allocate(8).putLong(n).array();
 	}
 	
 	/**
@@ -531,4 +551,5 @@ public class Convert {
     public static String fromBase64(String input){
         return fromBase64(input, CharEncoding.UTF_8.getCharset());
     }
+
 }

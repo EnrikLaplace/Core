@@ -122,7 +122,7 @@ public class Tcp extends Com {
 			}
 			return instream;
 		} catch (IOException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 			return null;
 		}
 	}
